@@ -24,6 +24,7 @@ package fromgate.noobprotector;
 
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -64,6 +65,29 @@ public class NPListener implements Listener{
 			informFailedAttack (p2,p1);
 		}
 	}
+	
+	@EventHandler(priority=EventPriority.LOW, ignoreCancelled = true)
+	public void onProjectileDamage (EntityDamageEvent event){
+		if (event.getEntityType() != EntityType.PLAYER) return;
+		EntityDamageByEntityEvent evdm = (EntityDamageByEntityEvent) event;
+		if (!(evdm.getDamager() instanceof Projectile)) return;
+		Projectile prj = (Projectile) evdm.getDamager();
+		if ((prj.getShooter()==null)||(!(prj.getShooter() instanceof Player))) return;
+		Player p1 = (Player) event.getEntity();
+		Player p2 = (Player) prj.getShooter();
+		if (plg.players.getPvpOff(p1)||plg.players.getPvpOff(p2)){
+			event.setCancelled(true);	
+			informFailedAttack (p2,p1);
+		}
+	}
+
+	
+	/*
+	 * 		EntityDamageByEntityEvent evdm = (EntityDamageByEntityEvent) event;
+		if (evdm.getDamager() instanceof Projectile) {
+			Projectile prj = (Projectile) evdm.getDamager();
+
+	 */
 	
 	
 	public void informFailedAttack (Player atacker, Player defender){

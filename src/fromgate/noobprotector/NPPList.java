@@ -24,8 +24,10 @@ package fromgate.noobprotector;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TimeZone;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -35,7 +37,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 public class NPPList {
 	NoobProtector plg;
 	Long prtreal= 3600000L;
-	Long prtplay = 5L; 
+	Long prtplay = 5L;
+	NPUtil u;
 
 
 	int tid;
@@ -46,6 +49,7 @@ public class NPPList {
 
 	public NPPList(NoobProtector plg){
 		this.plg = plg;
+		this.u = plg.u;
 		this.prtreal= plg.prttime*60000L;
 		this.prtplay= plg.prtplay*60000L;
 		this.useplaytime = plg.useplaytime;
@@ -162,7 +166,7 @@ public class NPPList {
 	public void updateOnlinePlayersPVP(){
 		for (Player p : Bukkit.getOnlinePlayers()){
 			if (updatePlayerPVP(p))
-				plg.u.PrintMSG(p, "msg_warnpvpon",'6');
+				u.PrintMSG(p, "msg_warnpvpon",'6');
 		}
 	}
 
@@ -251,35 +255,37 @@ public class NPPList {
 
 	public void printPlayerProtected (Player p, boolean prtempty, boolean pvpon){
 		if (players.containsKey(p.getName())){
-			String msg = plg.u.MSG("msg_protected",'b');
-			if (useplaytime) msg = msg+" "+plg.u.MSG("msg_playtime", getPlayTimeLeft (p),'b','e');
-			if (userealtime) msg = msg+" "+plg.u.MSG("msg_realtime", getProtectTime (p),'b','e');
-			plg.u.PrintMsg(p,msg);
-			if (pvpon) plg.u.PrintMSG(p, "msg_typepvpon","/pvp-on",'e','6');
-		} else if (prtempty) plg.u.PrintMSG(p, "msg_notprotected");
+			String msg = u.MSG("msg_protected",'b');
+			if (useplaytime) msg = msg+" "+u.MSG("msg_playtime", getPlayTimeLeft (p),'b','e');
+			if (userealtime) msg = msg+" "+u.MSG("msg_realtime", getProtectTime (p),'b','e');
+			u.PrintMsg(p,msg);
+			if (pvpon) u.PrintMSG(p, "msg_typepvpon","/pvp-on",'e','6');
+		} else if (prtempty) u.PrintMSG(p, "msg_notprotected");
 	}
 	
 	public void printTargetPlayerProtected (Player p, Player tp){
 		if (players.containsKey(tp.getName())){
-			String msg = plg.u.MSG("msg_plrisunprotected",tp.getName(),'b','e');
-			if (useplaytime) msg = msg+" "+plg.u.MSG("msg_playtime", getPlayTimeLeft (tp),'b','e');
-			if (userealtime) msg = msg+" "+plg.u.MSG("msg_realtime", getProtectTime (tp),'b','e');
-			plg.u.PrintMsg(p,msg);
-		} else plg.u.PrintMSG(p, "msg_plrisunprotected",tp.getName());
+			String msg = u.MSG("msg_plrisunprotected",tp.getName(),'b','e');
+			if (useplaytime) msg = msg+" "+u.MSG("msg_playtime", getPlayTimeLeft (tp),'b','e');
+			if (userealtime) msg = msg+" "+u.MSG("msg_realtime", getProtectTime (tp),'b','e');
+			u.PrintMsg(p,msg);
+		} else u.PrintMSG(p, "msg_plrisunprotected",tp.getName());
 	}
 
 
 
-	public void printList(Player p){
+	public void printList(Player p, int pnum, String mask){
 		if (players.size()>0){
-			plg.u.PrintMSG (p, "msg_plisttitle",'6');
+			List<String> ln = new ArrayList<String>();
 			for (String name : players.keySet()){
 				String pt = "";
 				if (this.userealtime) pt = pt+" : "+getProtectTime (name);
 				if (this.useplaytime) pt = pt+" : "+getPlayTimeLeft (name);
-				plg.u.PrintMsg(p, "&2"+name+" &a"+pt);
+				if (mask.isEmpty()||(name.contains(mask)))	ln.add("&2"+name+" &a"+pt);
 			}
-		} else plg.u.PrintMSG (p, "msg_emptylist",'6');
+			if (ln.size()>0) u.printPage(p, ln, pnum, "msg_plisttitle", "msg_plistfooter", true);
+			else u.PrintMSG (p, "msg_emptylist",'6');
+		} else u.PrintMSG (p, "msg_emptylist",'6');
 	}
 
 

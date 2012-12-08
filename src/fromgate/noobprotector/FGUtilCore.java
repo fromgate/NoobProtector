@@ -24,6 +24,7 @@ package fromgate.noobprotector;
 import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -278,8 +279,68 @@ public abstract class FGUtilCore {
 		}
 	}
 
+	
+	
+	public class PageList {
+		private List<String> ln;
+		private int lpp = 15;
+		private String title_msgid="msg_footer";
+		private String footer_msgid="msg_footer";
+		private boolean shownum=false;
+		
+		public PageList(List<String> ln, String title_msgid,String footer_msgid, boolean shownum){
+			this.ln = ln;
+			this.title_msgid =title_msgid; 
+			this.footer_msgid = footer_msgid;
+			this.shownum = shownum;
+		}
+		
+		
+		public void addLine (String str){
+			ln.add(str);
+		}
+		
+		public boolean isEmpty(){
+			return ln.isEmpty();
+		}
+		
+		public void setTitle(String title_msgid){
+			this.title_msgid = title_msgid;
+		}
+		
+		public void setShowNum(boolean shownum){
+		}
+		
+		public void setFooter(String footer_msgid){
+			this.footer_msgid = footer_msgid;
+		}
+		
+		
+		public void printPage(Player p, int pnum){
+			int maxp = ln.size()/lpp;
+			if ((ln.size()%lpp)>0) maxp++;
+			if (pnum>maxp) pnum = maxp;
+			int maxl = lpp;
+			if (pnum == maxp) {
+				maxl = ln.size()%maxp;
+				if (maxp==1) maxl = ln.size();
+			}
+			if (maxl == 0) maxl = lpp;
+			PrintMsg(p, "&6&l"+MSGnc(title_msgid));
+			String numpx="";
+			for (int i = 0; i<maxl; i++){
+				if (shownum) numpx ="&3"+ Integer.toString(1+i+(pnum-1)*lpp)+". ";
+				PrintMsg(p, numpx+"&a"+ln.get(i+(pnum-1)*lpp));
+			}
+			PrintMSG(p, this.footer_msgid, pnum+";"+maxp,'e','6');	
+		}
 
+	}
 
+	public void printPage (Player p, List<String> ln, int pnum, String title, String footer, boolean shownum){
+		PageList pl = new PageList (ln, title, footer, shownum);
+		pl.printPage(p, pnum);
+	}
 
 
 	/*

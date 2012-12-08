@@ -50,7 +50,7 @@ public class NPCmd implements CommandExecutor{
 				if ((args.length>0)&&u.CheckCmdPerm(p, args[0])){
 					if (args.length==1) return ExecuteCmd (p, args[0]);
 					else if (args.length==2) return ExecuteCmd (p, args[0],args[1]);
-					//else if (args.length==3) return ExecuteCmd (p, args[0],args[1],args[2]);
+					else if (args.length==3) return ExecuteCmd (p, args[0],args[1],args[2]);
 					//else if (args.length==4) return ExecuteCmd (p, args[0],args[1],args[2],args[3]);
 					//else if (args.length==5) return ExecuteCmd (p, args[0],args[1],args[2],args[3],args[4]);
 					/*else if (args.length>=5){
@@ -107,7 +107,7 @@ public class NPCmd implements CommandExecutor{
 			if (plg.players.unprotectPlayer(p)) u.PrintMSG(p, "msg_youunprotected");
 			else u.PrintMSG(p, "msg_unprtfail",p.getName());
 		} else if (cmd.equalsIgnoreCase("list")){
-			plg.players.printList(p);
+			plg.players.printList(p,1,"");
 		} else if (cmd.equalsIgnoreCase("reload")){
 			plg.reloadConfig();
 			plg.loadCfg();
@@ -122,7 +122,6 @@ public class NPCmd implements CommandExecutor{
 	private boolean ExecuteCmd(Player p, String cmd, String arg) {
 		if (cmd.equalsIgnoreCase("help")){
 			u.PrintHLP(p, arg);
-			return true;
 		} else if (cmd.equalsIgnoreCase("protect")){
 			Player prp = Bukkit.getPlayerExact(arg);
 			if ((prp!=null)&&(prp.isOnline())){
@@ -130,16 +129,36 @@ public class NPCmd implements CommandExecutor{
 				plg.players.printPlayerProtected(prp, false,true);
 				plg.players.printTargetPlayerProtected(p, prp);
 			} else u.PrintMSG (p, "msg_unknownplayer",arg);
-			return true;
 		} else if (cmd.equalsIgnoreCase("unprotect")){
 			Player prp = Bukkit.getPlayerExact(arg);
 			if (plg.players.unprotectPlayer(arg)){
 				if ((prp!=null)&&(prp.isOnline())) u.PrintMSG(prp, "msg_youunprotected");
 				u.PrintMSG(p, "msg_plrisunprotected",arg);	
 			} else u.PrintMSG(p, "msg_unprtfail",arg);
-			return true;
-		}		
-		return false;
+		} else if (cmd.equalsIgnoreCase("list")){
+			int pnum = 1;
+			String mask = "";
+			if (arg.matches("[1-9]+[0-9]*")) pnum = Integer.parseInt(arg);
+			else mask = arg;
+			plg.players.printList(p,pnum,mask);
+		} else return false;		 
+		return true;
+	}
+	
+	private boolean ExecuteCmd(Player p, String cmd, String arg1,String arg2) {
+		if (cmd.equalsIgnoreCase("list")){
+			int pnum = 1;
+			String mask = "";
+			if (arg1.matches("[1-9]+[0-9]*")) {
+				pnum = Integer.parseInt(arg1);
+				mask = arg2;
+			} else if (arg2.matches("[1-9]+[0-9]*")) {
+				pnum = Integer.parseInt(arg2);
+				mask = arg1;				
+			}
+			plg.players.printList(p,pnum,mask);
+		} else return false;
+		return true;
 	}
 
 }

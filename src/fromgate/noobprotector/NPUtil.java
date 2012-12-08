@@ -91,7 +91,7 @@ public class NPUtil extends FGUtilCore {
 		addCmd("help", "config",MSG("cmd_help","&3/noob help [command]",'b'),true);
 		addCmd("protect", "protect",MSG("cmd_protect","&3/noob protect [player]",'b'));
 		addCmd("unprotect", "unprotect",MSG("cmd_unprotect","&3/noob unprotect [player]",'b'));
-		addCmd("list", "config",MSG("cmd_list","&3/noob list",'b'),true);
+		addCmd("list", "config",MSG("cmd_list","&3/noob list [page] [name mask]",'b'),true);
 		addCmd("reload", "config",MSG("cmd_reload","&3/noob reload",'b'),true);
 		addCmd("cfg", "config",MSG("cmd_cfg","&3/noob cfg",'b'),true);
 	}
@@ -100,6 +100,9 @@ public class NPUtil extends FGUtilCore {
 		//NPPList
 		addMSG ("msg_warnpvpon", "Warning! PVP-protection removed. You can now attack and be attacked by other players!"); 
 		addMSG ("msg_plisttitle", "Noob-protected players");
+		addMSG ("msg_plistfooter", "Page: [%1% / %2%]");
+		
+		
 		addMSG ("msg_emptylist", "There's no Noob-protected players");
 
 		//cmd 
