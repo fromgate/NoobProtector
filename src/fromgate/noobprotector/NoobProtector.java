@@ -23,9 +23,12 @@
 package fromgate.noobprotector;
 
 import java.io.IOException;
-
+import java.util.ArrayList;
+import java.util.List;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 
 
 /* v0.0.1
@@ -42,26 +45,22 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 
 public class NoobProtector extends JavaPlugin {
-
-
 	// Конфигурация
 	boolean joinprotect = true;
 	boolean userealtime = true;
 	boolean useplaytime = true;
-	
 	int prttime = 2880; // 2880 мин = 2 дня
 	int prtplay = 300;  //  300 мин = 5 часов
-	
 	int pvponcooldown = 10; // в секундах
 	int pvpupdatetime = 5;  // в секундах
 	boolean playerwarn = true;  // рассказывать игроку, что он "защищен"
 	int playerwarntime = 30;    // каждые хх минут
-	
 	String timezone = ""; // Europe/Moscow, GMT+4
-
 	boolean version_check = false;
 	boolean language_save = true;
 	String language = "english";
+	List<String> no_pvp_worlds = new ArrayList<String>();
+	List<String> no_pvp_regions = new ArrayList<String>();
 
 	// Сервисные объекты и переменные
 	NPUtil u;
@@ -69,12 +68,15 @@ public class NoobProtector extends JavaPlugin {
 	NPPList players;
 	NPListener l;
 
+	WorldGuardPlugin worldguard;
+	boolean wg_active = false;
 
 	@Override
 	public void onEnable() {
 		if (!getDataFolder().exists()) getDataFolder().mkdirs();
 		loadCfg();
 		saveCfg();
+		wg_active = connectWorldGuard();
 
 		u = new NPUtil (this, version_check, language_save, language, "noob-protector", "NoobProtector", "noob", "&3[NP]&f ");
 		players = new NPPList (this);
@@ -86,7 +88,7 @@ public class NoobProtector extends JavaPlugin {
 		l = new NPListener (this);
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(l, this);
-		
+
 		try {
 			MetricsLite metrics = new MetricsLite(this);
 			metrics.start();
@@ -94,7 +96,7 @@ public class NoobProtector extends JavaPlugin {
 		}
 
 	}
-	
+
 	@Override
 	public void onDisable() {
 		players.savePlayerList();
@@ -114,6 +116,8 @@ public class NoobProtector extends JavaPlugin {
 		getConfig().set("schedule.pvp-update-time",pvpupdatetime);
 		getConfig().set("schedule.player-warn.enable",playerwarn);
 		getConfig().set("schedule.player-warn.time",playerwarntime);
+		getConfig().set("unprotected.worlds", no_pvp_worlds);
+		getConfig().set("unprotected.regions", no_pvp_regions);
 		saveConfig();
 	}
 
@@ -132,6 +136,18 @@ public class NoobProtector extends JavaPlugin {
 		pvpupdatetime=getConfig().getInt("schedule.pvp-update-time",pvpupdatetime);
 		playerwarn=getConfig().getBoolean("schedule.player-warn.enable",playerwarn);
 		playerwarntime=getConfig().getInt("schedule.player-warn.time",playerwarntime);
+		no_pvp_worlds= getConfig().getStringList("unprotected.worlds");
+		no_pvp_regions = getConfig().getStringList("unprotected.regions");
 	}
+
+	public boolean connectWorldGuard(){
+		Plugin worldGuard = getServer().getPluginManager().getPlugin("WorldGuard");
+		if ((worldGuard != null)&&(worldGuard instanceof WorldGuardPlugin)) {
+			worldguard = (WorldGuardPlugin)worldGuard;
+			return true;
+		}
+		return false;
+	}
+	
 
 }

@@ -69,6 +69,7 @@ public class NPListener implements Listener{
 	@EventHandler(priority=EventPriority.LOW, ignoreCancelled = true)
 	public void onProjectileDamage (EntityDamageEvent event){
 		if (event.getEntityType() != EntityType.PLAYER) return;
+		if (!(event instanceof EntityDamageByEntityEvent)) return;
 		EntityDamageByEntityEvent evdm = (EntityDamageByEntityEvent) event;
 		if (!(evdm.getDamager() instanceof Projectile)) return;
 		Projectile prj = (Projectile) evdm.getDamager();

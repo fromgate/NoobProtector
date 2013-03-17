@@ -40,6 +40,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -84,7 +85,7 @@ public abstract class FGUtilCore {
 	private String version_new_str="unknown";
 	private Logger log = Logger.getLogger("Minecraft");
 	Random random = new Random ();
-	int chId = 0;
+	BukkitTask chId;
 
 
 
@@ -204,8 +205,7 @@ public abstract class FGUtilCore {
 	 * 
 	 */
 	private void startUpdateTick(){
-
-		chId = plg.getServer().getScheduler().scheduleAsyncRepeatingTask(plg, new Runnable() {
+		chId = plg.getServer().getScheduler().runTaskTimerAsynchronously(plg, new Runnable() {
 			public void run() {
 				version_new = getNewVersion (version_current);
 			}
@@ -322,7 +322,7 @@ public abstract class FGUtilCore {
 			if (pnum>maxp) pnum = maxp;
 			int maxl = lpp;
 			if (pnum == maxp) {
-				maxl = ln.size()%maxp;
+				maxl = ln.size()%lpp;
 				if (maxp==1) maxl = ln.size();
 			}
 			if (maxl == 0) maxl = lpp;

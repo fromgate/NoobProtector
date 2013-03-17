@@ -30,9 +30,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TimeZone;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitTask;
+
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 
 public class NPPList {
 	NoobProtector plg;
@@ -41,8 +46,8 @@ public class NPPList {
 	NPUtil u;
 
 
-	int tid;
-	int tid2;
+	BukkitTask tid;
+	BukkitTask tid2;
 
 	boolean userealtime = true;
 	boolean useplaytime = true;
@@ -60,8 +65,12 @@ public class NPPList {
 		
 	
 
-
-		tid= Bukkit.getScheduler().scheduleAsyncRepeatingTask(this.plg, new Runnable(){
+				
+				
+				
+				
+				
+		tid = Bukkit.getScheduler().runTaskTimerAsynchronously(this.plg, new Runnable(){
 			public void run (){
 				updateOnlinePlayersPVP();
 			}
@@ -73,7 +82,7 @@ public class NPPList {
 
 
 		if (plg.playerwarn)
-			tid2= Bukkit.getScheduler().scheduleAsyncRepeatingTask(this.plg, new Runnable(){
+			tid2 = Bukkit.getScheduler().runTaskTimerAsynchronously(this.plg, new Runnable(){
 				public void run (){
 					warnPlayers();
 				}
@@ -183,10 +192,34 @@ public class NPPList {
 
 
 	public boolean getPvpOff(Player p){
+		if (isPlayerInUnprotectedWorld(p)) return false;
+		if (isPlayerInUnprotectedRegion(p)) return false;
 		return (players.containsKey(p.getName())&&
 				((userealtime&&(players.get(p.getName()).rtimelimit>System.currentTimeMillis()))||
 						(useplaytime&&updatePlayTime(p))));
 	}
+	
+	
+	public boolean isPlayerInUnprotectedWorld(Player p){
+		if (plg.no_pvp_worlds.isEmpty()) return false;
+		return (plg.no_pvp_worlds.contains(p.getWorld().getName()));
+	}
+	
+	public boolean isPlayerInUnprotectedRegion(Player p){
+		return isLocationInUnprotectedRegion (p.getLocation());
+	}
+
+	public boolean isLocationInUnprotectedRegion(Location loc){
+		if (!plg.wg_active) return false;
+		if (plg.no_pvp_regions.isEmpty()) return false;
+		ApplicableRegionSet regions = plg.worldguard.getRegionManager(loc.getWorld()).getApplicableRegions(loc); 
+		if (regions.size()>0){ 
+			for (ProtectedRegion region : regions)
+				if (plg.no_pvp_regions.contains(region.getId())) return true;
+		}
+		return false;
+	}
+	
 
 	public void savePlayerList(){
 		try {

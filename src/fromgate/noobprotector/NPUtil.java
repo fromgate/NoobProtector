@@ -134,7 +134,7 @@ public class NPUtil extends FGUtilCore {
 		addMSG ("msg_warnpvpoff", "You are now protected from PVP-attacks. But you cannot attack other players too. PVP-protection will be removed at %1%");
 		addMSG ("msg_youcantattack", "Hey! You cannot attack other players! Type %1% to remove protection.");
 		addMSG ("msg_warndefender", "%1% is trying to attack you!");
-		addMSG ("msg_warnatacker", "%1% is PVP-protected. You attack failed.");		
+		addMSG ("msg_warnatacker", "%1% is PVP-protected. Your attack failed.");		
 
 		addMSG ("msg_protected", "You are protected.");
 		addMSG ("msg_notprotected", "You are unprotected.");

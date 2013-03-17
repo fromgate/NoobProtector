@@ -51,20 +51,8 @@ public class NPCmd implements CommandExecutor{
 					if (args.length==1) return ExecuteCmd (p, args[0]);
 					else if (args.length==2) return ExecuteCmd (p, args[0],args[1]);
 					else if (args.length==3) return ExecuteCmd (p, args[0],args[1],args[2]);
-					//else if (args.length==4) return ExecuteCmd (p, args[0],args[1],args[2],args[3]);
-					//else if (args.length==5) return ExecuteCmd (p, args[0],args[1],args[2],args[3],args[4]);
-					/*else if (args.length>=5){
-						String arg4 = "";
-						for (int i = 4; i<args.length;i++) 
-							arg4 = arg4+" "+args[i];
-						arg4 = arg4.trim();
-						return ExecuteCmd (p, args[0],args[1],args[2],args[3],arg4);
-					} */
 				} else u.PrintPxMSG(p, "cmd_cmdpermerr",'c');
 				return true;
-
-
-
 			} else if (cmdLabel.equalsIgnoreCase("pvp-on")){
 				if (!p.hasPermission("noob-protector.pvp-on")) return true;
 				if (plg.players.getPvpOff(p))	{
