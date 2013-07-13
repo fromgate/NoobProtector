@@ -1,6 +1,6 @@
 name: NoobProtector
 main: fromgate.noobprotector.NoobProtector
-version: 0.0.3
+version: 0.0.4
 website: http://www.minecraft-mccity.ru
 author: fromgate, fromgate@gmail.com
 softdepend: [Vault, Towny, WorldGuard]
